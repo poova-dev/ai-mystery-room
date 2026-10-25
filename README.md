@@ -149,11 +149,11 @@ npm run client:dev   # Starts Vite frontend
 
 ---
 
-## 🌐 Deployment URLs
+## 🌐 Repository & Deployment URLs
 
-*(To be updated upon completing Milestone 7)*
-- **Frontend Live URL:** TBD
-- **Backend API URL:** TBD
+- **GitHub Repository URL:** https://github.com/poova-dev/ai-mystery-room
+- **Frontend Live URL:** TBD *(To be updated upon completing Milestone 7)*
+- **Backend API URL:** TBD *(To be updated upon completing Milestone 7)*
 
 ---
 
