@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import healthRoutes from './routes/health.routes.js';
+import caseRoutes from './routes/case.routes.js';
 import { notFoundHandler } from './middleware/not-found.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { standardRateLimiter } from './middleware/rate-limiters.js';
@@ -28,6 +29,7 @@ app.use('/api', standardRateLimiter);
 
 // API Routes
 app.use('/api', healthRoutes);
+app.use('/api', caseRoutes);
 
 // 404 Fallback Handler
 app.use(notFoundHandler);
