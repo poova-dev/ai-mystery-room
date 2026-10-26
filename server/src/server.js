@@ -1,7 +1,11 @@
 import 'dotenv/config';
 import app from './app.js';
+import { connectDB, disconnectDB } from './config/db.js';
 
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 5001;
+
+// Attempt database connection
+connectDB();
 
 const server = app.listen(PORT, () => {
   console.log(`AI Mystery Room server running on port ${PORT} [NODE_ENV=${process.env.NODE_ENV || 'development'}]`);
@@ -17,9 +21,14 @@ server.on('error', (err) => {
 });
 
 // Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
+const shutdown = async () => {
+  console.log('Shutting down gracefully...');
+  await disconnectDB();
   server.close(() => {
     console.log('Server process terminated.');
+    process.exit(0);
   });
-});
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

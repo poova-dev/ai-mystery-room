@@ -2,13 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import healthRoutes from './routes/health.routes.js';
+import { notFoundHandler } from './middleware/not-found.js';
+import { errorHandler } from './middleware/error-handler.js';
+import { standardRateLimiter } from './middleware/rate-limiters.js';
 
 const app = express();
 
-// Security middleware
+// Security headers with Helmet
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - synchronized with CLIENT_URL
 const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
 app.use(
   cors({
@@ -17,36 +20,19 @@ app.use(
   })
 );
 
-// Body parsing middleware
+// JSON body parser with size limit to prevent payload abuse
 app.use(express.json({ limit: '1mb' }));
 
-// Health route
+// Apply standard rate limiter to all API endpoints
+app.use('/api', standardRateLimiter);
+
+// API Routes
 app.use('/api', healthRoutes);
 
-// Fallback 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    error: {
-      code: 'NOT_FOUND',
-      message: 'The requested resource was not found.',
-    },
-  });
-});
+// 404 Fallback Handler
+app.use(notFoundHandler);
 
-// Global error handler
-app.use((err, req, res, next) => {
-  const status = err.statusCode || 500;
-  const message =
-    process.env.NODE_ENV === 'production' && status === 500
-      ? 'Internal server error'
-      : err.message || 'Internal server error';
-
-  res.status(status).json({
-    error: {
-      code: err.code || 'INTERNAL_SERVER_ERROR',
-      message,
-    },
-  });
-});
+// Centralized Error Handling Middleware
+app.use(errorHandler);
 
 export default app;
